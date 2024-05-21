@@ -1,0 +1,6 @@
+Object detection using YOLO3
+The initial version is written on May 19, 2024. I gradually add more features to it
+
+Notes:
+If you use Pycharm, it would be easier to show images using cv2, so install opencv-python  (setting --> Project--> Interpreter)
+IPython.dispaly would be easiter to be used in Jupyter Notebook, i.e., pip install ipython
