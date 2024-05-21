@@ -1,5 +1,6 @@
 import cv2
 import cvlib as cv
+import os
 from cvlib.object_detection import draw_bbox
 from sample_images import images_list
 
@@ -33,12 +34,25 @@ def detect_and_draw_box(filename, model="yolov4", confidence=0.5):
     for i, j in zip(label, conf):
         print(f"Detected object {i} with confidence level of {j} \n")
 
+    output_folder = 'image_with_box'
+    # create new image with box around detected objects
+    output_image = draw_bbox(img, bbox, label, conf)
+    cv2.imwrite(f'./{output_folder}/{filename}', output_image)
+
+    # display boxed image
+    img = cv2.imread(f'{output_folder}/{filename}')
+    cv2.imshow(f"{filename}", img)
+    cv2.waitKey(100)
+
+
+
 
 def main():
     images_list.create_output_folder()
     image_names = show_sample_images()
     for image in image_names:
         detect_and_draw_box(image)
+
 
 if __name__ == "__main__":
     main()
