@@ -1,5 +1,5 @@
 import io
-
+import os
 import cv2
 import cvlib
 import uvicorn
@@ -12,8 +12,8 @@ import cvlib as cv
 from cvlib.object_detection import draw_bbox
 
 # first we need to assign an instance of FastAPI class to the variable app and interact with api using this instance
-app = FastAPI(title="Deploying a ML model wuth FastAPI")
-# list of availbale models using Enum
+app = FastAPI(title="Deploying a ML model with FastAPI")
+# list of available models using Enum
 class Model(str, Enum):
     yolov4 = "yolov4"
     yolov4tiny = "yolov4_tiny"
@@ -32,7 +32,7 @@ def prediction(model: Model, file: UploadFile = File(...)):
     filename = file.filename
     fileEtension = filename.split(".")[-1] in ("jpg", "jpeg", "png")
     if not fileEtension:
-        raise HTTPException(status_code=415, detail="Unsupported file prodided")
+        raise HTTPException(status_code=415, detail="Unsupported file provided")
 
     # 2. Transform Wat Image into CV2 image
     # read image as a stream of bytes
@@ -41,7 +41,7 @@ def prediction(model: Model, file: UploadFile = File(...)):
     # Start the steam from the beginning (position zero)
     image_stream.seek(0)
 
-    # Wrtie the stream of bytes into a numpy array
+    # Write the stream of bytes into a numpy array
     file_bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
     # Decode the numpy array as an image
@@ -59,8 +59,20 @@ def prediction(model: Model, file: UploadFile = File(...)):
 
     # Stream the Response Back to the Client
     # Open the saves image for reading in binary mode
-    file_image = open(f'/images_uploaded/{filename}', mode='rb')
+    file_image = open(f'images_uploaded/{filename}', mode='rb')
 
     # Return the image as a stream specifying the media type
     return StreamingResponse(file_image, media_type="image/jpeg")
+
+
+if __name__ == "__main__":
+    # Allows the server to be run in this interactive environment
+    nest_asyncio.apply()
+
+    # Host depends on the setup you selected (docker or virtual env)
+    host = "0.0.0.0" if os.getenv("DOCKER-SETUP") else "127.0.0.1"
+
+    # Spin up the server!
+    uvicorn.run(app, host=host, port=8000)
+
 
