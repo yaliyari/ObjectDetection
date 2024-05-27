@@ -49,7 +49,7 @@ def prediction(model: Model, file: UploadFile = File(...)):
 
     # 3. Run Object Detection Model
     # Run object detection
-    bbox, label, conf = cv.detect_common_objects(image, model=model)
+    bbox, label, conf = cv.detect_common_objects(image, model=model, confidence=0.5)
 
     # create image with bounding box and label
     output_image = draw_bbox(image, bbox, label, conf)
